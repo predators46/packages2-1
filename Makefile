@@ -50,8 +50,12 @@ endef
 
 define Package/freeradius2/conffiles
 /etc/freeradius2/clients.conf
+/etc/freeradius2/policy.d/accounting
+/etc/freeradius2/policy.d/filter
+/etc/freeradius2/proxy.conf
 /etc/freeradius2/radiusd.conf
-/etc/freeradius2/sites/default
+/etc/freeradius2/sites-available/default
+/etc/freeradius2/sites-enabled/default
 endef
 
 define Package/freeradius2-democerts
@@ -66,6 +70,39 @@ define Package/freeradius2-common
   DEPENDS:=+libpthread +FREERADIUS_OPENSSL:libopenssl
 endef
 
+define Package/freeradius2-mod-always
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2
+  TITLE:=Always module
+endef
+
+define Package/freeradius2-mod-always/conffiles
+/etc/freeradius2/mods-available/always
+/etc/freeradius2/mods-enabled/always
+endef
+
+define Package/freeradius2-mod-attr-filter
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2
+  TITLE:=ATTR filter module
+endef
+
+define Package/freeradius2-mod-attr-filter/conffiles
+/etc/freeradius2/mods-available/attr_filter
+/etc/freeradius2/mods-enabled/attr_filter
+/etc/freeradius2/mods-config/attr_filter/access_challenge
+/etc/freeradius2/mods-config/attr_filter/access_reject
+/etc/freeradius2/mods-config/attr_filter/accounting_response
+/etc/freeradius2/mods-config/attr_filter/post-proxy
+/etc/freeradius2/mods-config/attr_filter/pre-proxy
+endef
+
+define Package/freeradius2-mod-attr-rewrite
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2
+  TITLE:=ATTR rewrite module
+endef
+
 define Package/freeradius2-mod-chap
   $(call Package/freeradius2/Default)
   DEPENDS:=freeradius2
@@ -73,7 +110,8 @@ define Package/freeradius2-mod-chap
 endef
 
 define Package/freeradius2-mod-chap/conffiles
-/etc/freeradius2/modules/chap
+/etc/freeradius2/mods-available/chap
+/etc/freeradius2/mods-enabled/chap
 endef
 
 define Package/freeradius2-mod-detail
@@ -83,7 +121,19 @@ define Package/freeradius2-mod-detail
 endef
 
 define Package/freeradius2-mod-detail/conffiles
-/etc/freeradius2/modules/detail
+/etc/freeradius2/mods-available/detail
+/etc/freeradius2/mods-enabled/detail
+endef
+
+define Package/freeradius2-mod-digest
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2
+  TITLE:=HTTP Digest Authentication
+endef
+
+define Package/freeradius2-mod-digest/conffiles
+/etc/freeradius2/mods-available/digest
+/etc/freeradius2/mods-enabled/digest
 endef
 
 define Package/freeradius2-mod-eap
@@ -93,13 +143,23 @@ define Package/freeradius2-mod-eap
 endef
 
 define Package/freeradius2-mod-eap/conffiles
-/etc/freeradius2/eap.conf
+/etc/freeradius2/mods-available/eap
+/etc/freeradius2/mods-enabled/eap
+/etc/freeradius2/policy.d/eap
+/etc/freeradius2/sites-enabled/inner-tunnel
+/etc/freeradius2/sites-available/inner-tunnel
 endef
 
 define Package/freeradius2-mod-eap-gtc
   $(call Package/freeradius2/Default)
   DEPENDS:=freeradius2-mod-eap
   TITLE:=EAP/GTC module
+endef
+
+define Package/freeradius2-mod-eap-leap
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2-mod-eap
+  TITLE:=EAP/LEAP module
 endef
 
 define Package/freeradius2-mod-eap-md5
@@ -118,6 +178,12 @@ define Package/freeradius2-mod-eap-peap
   $(call Package/freeradius2/Default)
   DEPENDS:=freeradius2-mod-eap @FREERADIUS_OPENSSL
   TITLE:=EAP/PEAP module
+endef
+
+define Package/freeradius2-mod-eap-pwd
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2-mod-eap @FREERADIUS_OPENSSL
+  TITLE:=EAP/PWD module
 endef
 
 define Package/freeradius2-mod-eap-tls
@@ -139,7 +205,8 @@ define Package/freeradius2-mod-exec
 endef
 
 define Package/freeradius2-mod-exec/conffiles
-/etc/freeradius2/modules/exec
+/etc/freeradius2/mods-available/exec
+/etc/freeradius2/mods-enabled/exec
 endef
 
 define Package/freeradius2-mod-expiration
@@ -149,17 +216,8 @@ define Package/freeradius2-mod-expiration
 endef
 
 define Package/freeradius2-mod-expiration/conffiles
-/etc/freeradius2/modules/expiration
-endef
-
-define Package/freeradius2-mod-always
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2
-  TITLE:=Always module
-endef
-
-define Package/freeradius2-mod-always/conffiles
-/etc/freeradius2/modules/always
+/etc/freeradius2/mods-available/expiration
+/etc/freeradius2/mods-enabled/expiration
 endef
 
 define Package/freeradius2-mod-expr
@@ -169,31 +227,8 @@ define Package/freeradius2-mod-expr
 endef
 
 define Package/freeradius2-mod-expr/conffiles
-/etc/freeradius2/modules/expr
-endef
-
-define Package/freeradius2-mod-attr-filter
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2
-  TITLE:=ATTR filter module
-endef
-
-define Package/freeradius2-mod-attr-filter/conffiles
-/etc/freeradius2/modules/attr_filter
-/etc/freeradius2/attrs
-/etc/freeradius2/attrs.access_reject
-/etc/freeradius2/attrs.accounting_response
-/etc/freeradius2/attrs.pre-proxy
-endef
-
-define Package/freeradius2-mod-attr-rewrite
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2
-  TITLE:=ATTR rewrite module
-endef
-
-define Package/freeradius2-mod-attr-rewrite/conffiles
-/etc/freeradius2/modules/attr_rewrite
+/etc/freeradius2/mods-available/expr
+/etc/freeradius2/mods-enabled/expr
 endef
 
 define Package/freeradius2-mod-files
@@ -203,31 +238,21 @@ define Package/freeradius2-mod-files
 endef
 
 define Package/freeradius2-mod-files/conffiles
-/etc/freeradius2/acct_users
-/etc/freeradius2/preproxy_users
-/etc/freeradius2/users
-/etc/freeradius2/modules/files
-endef
-
-define Package/freeradius2-mod-passwd
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2
-  TITLE:=Rlm passwd module
-endef
-
-define Package/freeradius2-mod-passwd/conffiles
-/etc/freeradius2/modules/passwd
+/etc/freeradius2/mods-available/files
+/etc/freeradius2/mods-enabled/files
+/etc/freeradius2/mods-config/files/accounting
+/etc/freeradius2/mods-config/files/authorize
+/etc/freeradius2/mods-config/files/pre-proxy
 endef
 
 define Package/freeradius2-mod-ldap
   $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2 +libopenldap
-  TITLE:=LDAP module
+  DEPENDS:=freeradius2 +libopenldap @FREERADIUS_OPENSSL
+  TITLE:=LDAP Authentication
 endef
 
 define Package/freeradius2-mod-ldap/conffiles
-/etc/freeradius2/ldap.attrmap
-/etc/freeradius2/modules/ldap
+/etc/freeradius2/mods-available/ldap
 endef
 
 define Package/freeradius2-mod-logintime
@@ -237,7 +262,8 @@ define Package/freeradius2-mod-logintime
 endef
 
 define Package/freeradius2-mod-logintime/conffiles
-/etc/freeradius2/modules/logintime
+/etc/freeradius2/mods-available/logintime
+/etc/freeradius2/mods-enabled/logintime
 endef
 
 define Package/freeradius2-mod-mschap
@@ -247,7 +273,8 @@ define Package/freeradius2-mod-mschap
 endef
 
 define Package/freeradius2-mod-mschap/conffiles
-/etc/freeradius2/modules/mschap
+/etc/freeradius2/mods-available/mschap
+/etc/freeradius2/mods-enabled/mschap
 endef
 
 define Package/freeradius2-mod-pap
@@ -257,7 +284,19 @@ define Package/freeradius2-mod-pap
 endef
 
 define Package/freeradius2-mod-pap/conffiles
-/etc/freeradius2/modules/pap
+/etc/freeradius2/mods-available/pap
+/etc/freeradius2/mods-enabled/pap
+endef
+
+define Package/freeradius2-mod-passwd
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2
+  TITLE:=Rlm passwd module
+endef
+
+define Package/freeradius2-mod-passwd/conffiles
+/etc/freeradius2/mods-available/passwd
+/etc/freeradius2/mods-enabled/passwd
 endef
 
 define Package/freeradius2-mod-preprocess
@@ -267,54 +306,10 @@ define Package/freeradius2-mod-preprocess
 endef
 
 define Package/freeradius2-mod-preprocess/conffiles
-/etc/freeradius2/hints
-/etc/freeradius2/huntgroups
-/etc/freeradius2/modules/preprocess
-endef
-
-define Package/freeradius2-mod-realm
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2
-  TITLE:=Realms handling module
-endef
-
-define Package/freeradius2-mod-realm/conffiles
-/etc/freeradius2/proxy.conf
-/etc/freeradius2/modules/realm
-endef
-
-define Package/freeradius2-mod-sql
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2
-  TITLE:=Base SQL module
-endef
-
-define Package/freeradius2-mod-sql/conffiles
-/etc/freeradius2/sql.conf
-endef
-
-define Package/freeradius2-mod-sql-mysql
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2-mod-sql +libmysqlclient-r
-  TITLE:=MySQL module
-endef
-
-define Package/freeradius2-mod-sql-pgsql
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2-mod-sql +libpq
-  TITLE:=PostgreSQL module
-endef
-
-define Package/freeradius2-mod-sql-sqlite
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2-mod-sql +libsqlite3
-  TITLE:=SQLite module
-endef
-
-define Package/freeradius2-mod-sqlcounter
-  $(call Package/freeradius2/Default)
-  DEPENDS:=freeradius2-mod-sql
-  TITLE:=Generic SQL Counter module
+/etc/freeradius2/mods-config/preprocess/hints
+/etc/freeradius2/mods-config/preprocess/huntgroups
+/etc/freeradius2/mods-available/preprocess
+/etc/freeradius2/mods-enabled/preprocess
 endef
 
 define Package/freeradius2-mod-radutmp
@@ -324,8 +319,106 @@ define Package/freeradius2-mod-radutmp
 endef
 
 define Package/freeradius2-mod-radutmp/conffiles
-/etc/freeradius2/modules/radutmp
-/etc/freeradius2/modules/sradutmp
+/etc/freeradius2/mods-available/radutmp
+/etc/freeradius2/mods-enabled/radutmp
+/etc/freeradius2/mods-available/sradutmp
+/etc/freeradius2/mods-enabled/sradutmp
+endef
+
+define Package/freeradius2-mod-realm
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2
+  TITLE:=Realms handling module
+endef
+
+define Package/freeradius2-mod-realm/conffiles
+/etc/freeradius2/mods-available/realm
+/etc/freeradius2/mods-enabled/realm
+endef
+
+define Package/freeradius2-mod-rest
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2 +libcurl +libjson-c
+  TITLE:=Radius REST module
+endef
+
+define Package/freeradius2-mod-rest/conffiles
+/etc/freeradius2/mods-available/rest
+endef
+
+define Package/freeradius2-mod-sql
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2
+  TITLE:=Radius generic SQL front-end
+endef
+
+define Package/freeradius2-mod-sql/conffiles
+/etc/freeradius2/mods-available/sql
+endef
+
+define Package/freeradius2-mod-sql-mysql
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2-mod-sql +libmysqlclient-r
+  TITLE:=Radius MySQL back-end drivers
+endef
+
+define Package/freeradius2-mod-sql-mysql/conffiles
+/etc/freeradius2/mods-config/sql/main/mysql
+endef
+
+define Package/freeradius2-mod-sql-postgresql
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2-mod-sql +libpq
+  TITLE:=Radius PostgreSQL back-end drivers
+endef
+
+define Package/freeradius2-mod-sql-postgresql/conffiles
+/etc/freeradius2/mods-config/sql/main/postgresql
+endef
+
+define Package/freeradius2-mod-sql-sqlite
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2-mod-sql +libsqlite3
+  TITLE:=Radius SQLite back-end drivers
+endef
+
+define Package/freeradius2-mod-sql-sqlite/conffiles
+/etc/freeradius2/mods-config/sql/main/sqlite
+endef
+
+define Package/freeradius2-mod-sqlcounter
+  $(call Package/freeradius2/Default)
+  DEPENDS:=+freeradius2-mod-sql
+  TITLE:=Packet counter using accounting records written into an SQL database
+endef
+
+define Package/freeradius2-mod-sqlcounter/conffiles
+/etc/freeradius2/mods-config/sql/counter
+/etc/freeradius2/mods-available/sqlcounter
+endef
+
+define Package/freeradius2-mod-sqlippool
+  $(call Package/freeradius2/Default)
+  DEPENDS:=+freeradius2-mod-sql
+  TITLE:=Radius SQL Based IP Pool module
+endef
+
+define Package/freeradius2-mod-sqlippool/conffiles
+/etc/freeradius2/mods-config/sql/ippool
+/etc/freeradius2/mods-config/sql/ippool-dhcp
+/etc/freeradius2/mods-available/dhcp_sqlippool
+/etc/freeradius2/mods-available/sqlippool
+endef
+
+define Package/freeradius2-mod-unix
+  $(call Package/freeradius2/Default)
+  DEPENDS:=freeradius2
+  TITLE:=System Authentication
+endef
+
+define Package/freeradius2-mod-unix/conffiles
+/etc/freeradius2/mods-available/unix
+/etc/freeradius2/mods-enabled/unix
 endef
 
 define Package/freeradius2-utils
